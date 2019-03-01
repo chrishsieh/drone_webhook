@@ -7,5 +7,3 @@ services:
   test:
     build: .
     image: drone_webhook
-  github:
-    image: chrishsieh/drone_webhook
