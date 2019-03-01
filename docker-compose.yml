@@ -1,8 +1,11 @@
 version: '3.5'
 services:
+  build:
+    image: golang:1.7
+    volumes:
+      - .:/go
   test:
     build: .
-    container_name: go-test
-    image: chrishsieh/drone_webhook
+    image: drone_webhook
   github:
     image: chrishsieh/drone_webhook
