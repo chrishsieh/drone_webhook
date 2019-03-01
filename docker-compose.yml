@@ -1,0 +1,6 @@
+version: '3.5'
+services:
+  test:
+    build: .
+    container_name: go-test
+    image: chrishsieh/drone_webhook
