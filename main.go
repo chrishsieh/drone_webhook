@@ -1,25 +1,26 @@
 package main
 
 import (
-	"github.com/drone/drone-go/drone"
-	"golang.org/x/oauth2"
 	"fmt"
 	"os"
-	"strings"
 	"strconv"
+	"strings"
+
+	"github.com/drone/drone-go/drone"
+	"golang.org/x/oauth2"
 )
 
 func main() {
- 	token := os.Getenv("PLUGIN_TOKEN")
+	token := os.Getenv("PLUGIN_TOKEN")
 	host := "https://cloud.drone.io"
-	if host_path_arr := strings.Split(os.Getenv("DRONE_BUILD_LINK"), "/"); len(host_path_arr) > 2 {
-		host = host_path_arr[0]+"//"+host_path_arr[2]
+	if hostPathArr := strings.Split(os.Getenv("DRONE_BUILD_LINK"), "/"); len(hostPathArr) > 2 {
+		host = hostPathArr[0] + "//" + hostPathArr[2]
 	}
-	repo_name := os.Getenv("DRONE_REPO_NAME")
-	repo_namespace := os.Getenv("DRONE_REPO_NAMESPACE")
-	build_number, _ := strconv.Atoi(os.Getenv("DRONE_BUILD_NUMBER"))
-//	current_stage_number, _ := strconv.Atoi(os.Getenv("DRONE_STAGE_NUMBER"))
-	current_branch := os.Getenv("DRONE_COMMIT_BRANCH")
+	repoName := os.Getenv("DRONE_REPO_NAME")
+	repoNamespace := os.Getenv("DRONE_REPO_NAMESPACE")
+	buildNumber, _ := strconv.Atoi(os.Getenv("DRONE_BUILD_NUMBER"))
+	currentStageNumber, _ := strconv.Atoi(os.Getenv("DRONE_STAGE_NUMBER"))
+	currentBranch := os.Getenv("DRONE_COMMIT_BRANCH")
 
 	// create an http client with oauth authentication.
 	config := new(oauth2.Config)
@@ -33,16 +34,25 @@ func main() {
 	// create the drone client with authenticator
 	client := drone.NewClient(host, auther)
 
-	if len(repo_namespace) > 0 && len(repo_name) > 0 {
-		got, err := client.BuildLast(repo_namespace, repo_name, current_branch)
-		fmt.Println(got.Status, err)
+	if len(repoNamespace) > 0 && len(repoName) > 0 {
+		if gotBuild, err := client.Build(repoNamespace, repoName, buildNumber); err == nil {
+			for index, element := range gotBuild.Stages {
+				if index != currentStageNumber {
+					fmt.Println(element.Name + ":" + element.Status)
+				}
+			}
+		}
 
-		gotBuild, err := client.Build(repo_namespace, repo_name, build_number)
-		//for index, element := range gotBuild.Stages {
-		for _, element := range gotBuild.Stages {
-			//if index != current_stage_number {
-				fmt.Println(element.Name+":"+element.Status, err)
-			//}
+		for page, foundLastBuild := 1, 0; page <= 4 && foundLastBuild == 0; page++ {
+			if gotBuildlist, err := client.BuildList(repoNamespace, repoName, drone.ListOptions{page}); err == nil {
+				for _, element := range gotBuildlist {
+					if currentBranch == element.Source && int64(buildNumber) > element.Number {
+						fmt.Println(element.Source + "[" + strconv.FormatInt(element.Number, 10) + "]:" + element.Status)
+						foundLastBuild = 1
+						break
+					}
+				}
+			}
 		}
 	} else {
 		fmt.Println("No Repo or build.")
