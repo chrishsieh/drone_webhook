@@ -35,10 +35,11 @@ func main() {
 	client := drone.NewClient(host, auther)
 
 	if len(repoNamespace) > 0 && len(repoName) > 0 {
+		fmt.Println("currentStageNumber=" + strconv.FormatInt(int64(currentStageNumber), 10))
 		if gotBuild, err := client.Build(repoNamespace, repoName, buildNumber); err == nil {
 			for index, element := range gotBuild.Stages {
 				if index != currentStageNumber {
-					fmt.Println(element.Name + ":" + element.Status)
+					fmt.Println(element.Name + "[" + strconv.FormatInt(int64(index), 10) + "]:" + element.Status)
 				}
 			}
 		}
