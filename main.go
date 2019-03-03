@@ -40,13 +40,13 @@ func main() {
 			EnvVar: "PLUGIN_CONTENT_TYPE",
 			Value:  "application/json",
 		},
-		cli.StringSliceFlag{
+		cli.StringFlag{
 			Name:   "on_success",
 			Usage:  "on_success",
 			EnvVar: "PLUGIN_ON_SUCCESS",
 			Value:  "change",
 		},
-		cli.StringSliceFlag{
+		cli.StringFlag{
 			Name:   "on_failure",
 			Usage:  "on_failure",
 			EnvVar: "PLUGIN_ON_FAILURE",
