@@ -7,25 +7,20 @@ import (
 	"strings"
 
 	"github.com/drone/drone-go/drone"
-	"github.com/drone/drone-plugin-go/plugin"
 	"golang.org/x/oauth2"
 )
 
 func main() {
 	token := os.Getenv("PLUGIN_TOKEN")
-	var repo = plugin.Repo{}
-	var build = plugin.Build{}
+	var repo = drone.Repo{}
+	var build = drone.Build{}
 	var vargs = struct {
 		Urls []string `json:"urls"`
 	}{}
 
-	plugin.Param("repo", &repo)
-	plugin.Param("build", &build)
-	plugin.Param("vargs", &vargs)
-	plugin.Parse()
-
 	fmt.Println(repo)
 	fmt.Println(build)
+	fmt.Println(vargs)
 	// data structure
 	//data := struct {
 	//	Repo  plugin.Repo  `json:"repo"`
