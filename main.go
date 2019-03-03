@@ -7,11 +7,39 @@ import (
 	"strings"
 
 	"github.com/drone/drone-go/drone"
+	"github.com/drone/drone-plugin-go/plugin"
 	"golang.org/x/oauth2"
 )
 
 func main() {
 	token := os.Getenv("PLUGIN_TOKEN")
+	var repo = plugin.Repo{}
+	var build = plugin.Build{}
+	var vargs = struct {
+		Urls []string `json:"urls"`
+	}{}
+
+	plugin.Param("repo", &repo)
+	plugin.Param("build", &build)
+	plugin.Param("vargs", &vargs)
+	plugin.Parse()
+
+	fmt.Println(repo)
+	fmt.Println(build)
+	// data structure
+	//data := struct {
+	//	Repo  plugin.Repo  `json:"repo"`
+	//	Build plugin.Build `json:"build"`
+	//}{repo, build}
+
+	//fmt.Println(data)
+	// json payload that will be posted
+	//payload, err := json.Marshal(&data)
+	//if err != nil {
+	//	os.Exit(1)
+	//}
+	//fmt.Println(payload)
+
 	host := "https://cloud.drone.io"
 	if hostPathArr := strings.Split(os.Getenv("DRONE_BUILD_LINK"), "/"); len(hostPathArr) > 2 {
 		host = hostPathArr[0] + "//" + hostPathArr[2]
