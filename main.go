@@ -99,8 +99,8 @@ func main() {
 			Usage:  "skip ssl verification",
 			EnvVar: "PLUGIN_SKIP_VERIFY",
 		},
-		cli.IntFlag{
-			Name:   "pipeline-name",
+		cli.StringFlag{
+			Name:   "pipeline_name",
 			Usage:  "notify pipeline name",
 			EnvVar: "PLUGIN_PIPELINE_NAME",
 		},
@@ -227,7 +227,7 @@ func run(c *cli.Context) error {
 			Token:         c.String("token"),
 			OnSuccess:     c.String("on_success"),
 			OnFailure:     c.String("on_failure"),
-			PipelineName:  c.String("pipeline-name"),
+			PipelineName:  c.String("pipeline_name"),
 		},
 	}
 
