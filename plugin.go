@@ -132,7 +132,6 @@ func (p Plugin) Exec() error {
 		}
 
 		if showNotify > 0 {
-			fmt.Println(p)
 			if gotBuild, err := client.Build(p.Repo.Owner, p.Repo.Name, p.Build.Number); err == nil {
 				for _, element := range gotBuild.Stages {
 					if p.Config.PipelineName != element.Name {
