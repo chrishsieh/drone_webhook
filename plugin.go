@@ -40,23 +40,23 @@ type (
 		Link    string `json:"link"`
 		Started int64  `json:"started"`
 		Created int64  `json:"created"`
-		Stage   int    `json:"stage"`
 	}
 
 	Config struct {
-		Method      string
-		Username    string
-		Password    string
-		ContentType string
-		Template    string
-		Headers     []string
-		URLs        []string
-		ValidCodes  []int
-		Debug       bool
-		SkipVerify  bool
-		Token       string
-		OnSuccess   string
-		OnFailure   string
+		Method        string
+		Username      string
+		Password      string
+		ContentType   string
+		Template      string
+		Headers       []string
+		URLs          []string
+		ValidCodes    []int
+		Debug         bool
+		SkipVerify    bool
+		Token         string
+		OnSuccess     string
+		OnFailure     string
+		PipelineName  string
 	}
 
 	Job struct {
@@ -132,13 +132,10 @@ func (p Plugin) Exec() error {
 		}
 
 		if showNotify > 0 {
-			fmt.Println(os.Getenv("DRONE_STAGE_NUMBER"))
 			fmt.Println(p)
-			fmt.Println("Build.Stage=",p.Build.Stage)
 			if gotBuild, err := client.Build(p.Repo.Owner, p.Repo.Name, p.Build.Number); err == nil {
-				for index, element := range gotBuild.Stages {
-					fmt.Println(index, element.Name, element.Status," ")
-					if index != p.Build.Stage-1 {
+				for _, element := range gotBuild.Stages {
+					if p.Config.PipelineName != element.Name {
 						var pipe Pipeline
 						pipe.Name = element.Name
 						pipe.Status = element.Status
