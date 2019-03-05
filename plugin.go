@@ -132,6 +132,7 @@ func (p Plugin) Exec() error {
 		}
 
 		if showNotify > 0 {
+			fmt.Println(os.Getenv("DRONE_STAGE_NUMBER"))
 			fmt.Println(p)
 			fmt.Println("Build.Stage=",p.Build.Stage)
 			if gotBuild, err := client.Build(p.Repo.Owner, p.Repo.Name, p.Build.Number); err == nil {
