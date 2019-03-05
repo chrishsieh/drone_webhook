@@ -16,6 +16,11 @@ import (
 	"golang.org/x/oauth2"
 )
 
+type Pipeline struct {
+	Name  string `json:"pipename"`
+	Status  string `json:"pipestatus`
+}
+
 type (
 	Repo struct {
 		Owner string `json:"owner"`
@@ -56,6 +61,7 @@ type (
 
 	Job struct {
 		Started int64
+		Status []Pipeline `json:"jobstatus"`
 	}
 
 	Plugin struct {
@@ -126,10 +132,19 @@ func (p Plugin) Exec() error {
 		}
 
 		if showNotify > 0 {
+			fmt.Println(p)
+			fmt.Println("Build.Stage=",p.Build.Stage)
 			if gotBuild, err := client.Build(p.Repo.Owner, p.Repo.Name, p.Build.Number); err == nil {
 				for index, element := range gotBuild.Stages {
+					fmt.Println(index, element.Name, element.Status," ")
 					if index != p.Build.Stage-1 {
-						fmt.Println(element.Name + ":" + element.Status)
+						var pipe Pipeline
+						pipe.Name = element.Name
+						pipe.Status = element.Status
+						p.Job.Status = append(p.Job.Status, pipe)
+						if element.Status != "success" {
+							p.Build.Status = element.Status
+						}
 					}
 				}
 			}

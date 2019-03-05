@@ -28,11 +28,13 @@ func main() {
 			Name:   "username",
 			Usage:  "username for basic auth",
 			EnvVar: "PLUGIN_USERNAME,WEBHOOK_USERNAME",
+			Hidden: true,
 		},
 		cli.StringFlag{
 			Name:   "password",
 			Usage:  "password for basic auth",
 			EnvVar: "PLUGIN_PASSWORD,WEBHOOK_PASSWORD",
+			Hidden: true,
 		},
 		cli.StringFlag{
 			Name:   "content-type",
@@ -57,10 +59,11 @@ func main() {
 			Usage:  "custom template for webhook",
 			EnvVar: "PLUGIN_TEMPLATE",
 		},
-		cli.StringSliceFlag{
+		cli.StringFlag{
 			Name:   "token",
 			Usage:  "drone API token",
 			EnvVar: "PLUGIN_TOKEN",
+			Hidden: true,
 		},
 		cli.StringSliceFlag{
 			Name:   "headers",
@@ -71,6 +74,15 @@ func main() {
 			Name:   "urls",
 			Usage:  "list of urls to perform the action on",
 			EnvVar: "PLUGIN_URLS,WEBHOOK_URLS",
+			Hidden: true,
+		},
+		cli.StringSliceFlag{
+			Name:   "build.pipestatus",
+			Usage:  "list of piple status",
+		},
+		cli.StringSliceFlag{
+			Name:   "build.pipename",
+			Usage:  "list of piple status",
 		},
 		cli.IntSliceFlag{
 			Name:   "valid-response-codes",
