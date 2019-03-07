@@ -17,8 +17,8 @@ import (
 )
 
 type Pipeline struct {
-	Name  string `json:"pipename"`
-	Status  string `json:"pipestatus`
+	Name   string `json:"pipename"`
+	Status string `json:"pipestatus`
 }
 
 type (
@@ -43,25 +43,25 @@ type (
 	}
 
 	Config struct {
-		Method        string
-		Username      string
-		Password      string
-		ContentType   string
-		Template      string
-		Headers       []string
-		URLs          []string
-		ValidCodes    []int
-		Debug         bool
-		SkipVerify    bool
-		Token         string
-		OnSuccess     string
-		OnFailure     string
-		PipelineName  string
+		Method       string
+		Username     string
+		Password     string
+		ContentType  string
+		Template     string
+		Headers      []string
+		URLs         []string
+		ValidCodes   []int
+		Debug        bool
+		SkipVerify   bool
+		Token        string
+		OnSuccess    string
+		OnFailure    string
+		PipelineName string
 	}
 
 	Job struct {
 		Started int64
-		Status []Pipeline `json:"jobstatus"`
+		Status  []Pipeline `json:"jobstatus"`
 	}
 
 	Plugin struct {
@@ -104,7 +104,7 @@ func (p Plugin) Exec() error {
 				if gotBuildlist, err := client.BuildList(p.Repo.Owner, p.Repo.Name, drone.ListOptions{page}); err == nil {
 					for _, element := range gotBuildlist {
 						if p.Build.Branch == element.Source && int64(p.Build.Number) > element.Number {
-							if element.Status == "success" {
+							if element.Status == drone.StatusPassing {
 								lastBuild = 1
 							} else {
 								lastBuild = 2
@@ -116,18 +116,18 @@ func (p Plugin) Exec() error {
 				}
 			}
 
-			if p.Config.OnSuccess == "change" && p.Build.Status == "success" && lastBuild != 1 {
+			if p.Config.OnSuccess == "change" && p.Build.Status == drone.StatusPassing && lastBuild != 1 {
 				showNotify = 1
 			}
-			if p.Config.OnFailure == "change" && p.Build.Status != "success" && lastBuild == 1 {
+			if p.Config.OnFailure == "change" && p.Build.Status != drone.StatusPassing && lastBuild == 1 {
 				showNotify = 1
 			}
 		}
 
-		if p.Config.OnSuccess == "always" && p.Build.Status == "success" {
+		if p.Config.OnSuccess == "always" && p.Build.Status == drone.StatusPassing {
 			showNotify = 1
 		}
-		if p.Config.OnFailure == "always" && p.Build.Status != "success" {
+		if p.Config.OnFailure == "always" && p.Build.Status != drone.StatusPassing {
 			showNotify = 1
 		}
 
@@ -139,7 +139,7 @@ func (p Plugin) Exec() error {
 						pipe.Name = element.Name
 						pipe.Status = element.Status
 						p.Job.Status = append(p.Job.Status, pipe)
-						if element.Status != "success" {
+						if element.Status != drone.StatusPassing {
 							p.Build.Status = element.Status
 						}
 					}
